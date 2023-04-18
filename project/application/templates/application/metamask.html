@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Log in via Metamask</title>
+</head>
+<body>
+  <h1>Log in via Metamask</h1>
+  <button id="login-button">Log in via Metamask</button>
+  <script>
+    // Add an event listener to the login button
+    document.getElementById('login-button').addEventListener('click', async () => {
+      try {
+        // Request access to the user's Ethereum accounts from Metamask
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts'
+        });
+
+        // Get the user's email and username from the form
+        const email = document.getElementById('email-input').value;
+        const username = document.getElementById('username-input').value;
+
+        // Send the user's public address, email, and username to the backend
+        const response = await fetch('http://127.0.0.1:8000/metamask/', {
+          method: 'POST',
+          body: JSON.stringify({
+            public_address: accounts[0],
+            email: email,
+            username: username
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // Handle the response from the backend
+        const data = await response.json();
+        console.log(data);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
